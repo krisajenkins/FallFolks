@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "bootstrap": "^5.3.3",
+    "node-websocket": "^0.1.6",
+    "parcel": "^2.11.0",
+    "robust-websocket": "^1.0.0",
+    "uuid": "^9.0.1",
+    "ws": "^8.16.0"
+  }
+}

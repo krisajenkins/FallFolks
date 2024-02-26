@@ -1,0 +1,243 @@
+{
+  "nodes": {
+    "confluent": {
+      "inputs": {
+        "confluent-cli-src": "confluent-cli-src",
+        "confluent-platform-src": "confluent-platform-src",
+        "kafka-connector-http-source": "kafka-connector-http-source",
+        "kcat-src": "kcat-src",
+        "libserdes-src": "libserdes-src",
+        "nixpkgs": "nixpkgs",
+        "rdkafka-src": "rdkafka-src",
+        "utils": "utils"
+      },
+      "locked": {
+        "lastModified": 1708083608,
+        "narHash": "sha256-7TMUXADbqKjwQk6mJyG2Sq7zGUldMlP9kZjZP5ykuQ8=",
+        "owner": "krisajenkins",
+        "repo": "confluent-niv",
+        "rev": "00df34f042ef750f3e4d4f32023f5a781c43ea99",
+        "type": "github"
+      },
+      "original": {
+        "owner": "krisajenkins",
+        "repo": "confluent-niv",
+        "rev": "00df34f042ef750f3e4d4f32023f5a781c43ea99",
+        "type": "github"
+      }
+    },
+    "confluent-cli-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1707476521,
+        "narHash": "sha256-ceE0CrtcxjTQjDiM1N/XZsxOFuptV0VmgbvMGniNxfY=",
+        "type": "tarball",
+        "url": "https://s3-us-west-2.amazonaws.com/confluent.cloud/confluent-cli/archives/3.48.1/confluent_3.48.1_darwin_amd64.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://s3-us-west-2.amazonaws.com/confluent.cloud/confluent-cli/archives/3.48.1/confluent_3.48.1_darwin_amd64.tar.gz"
+      }
+    },
+    "confluent-platform-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1703098762,
+        "narHash": "sha256-EzStbfnTAPNwC39SZsSQhTgU6lGQXjArLFntfhocpxo=",
+        "type": "tarball",
+        "url": "http://packages.confluent.io/archive/7.5/confluent-7.5.3.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "http://packages.confluent.io/archive/7.5/confluent-7.5.3.tar.gz"
+      }
+    },
+    "easy-purescript-nix": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1696584097,
+        "narHash": "sha256-a9Hhqf/Fi0FkjRTcQr3pYDhrO9A9tdOkaeVgD23Cdrk=",
+        "owner": "justinwoo",
+        "repo": "easy-purescript-nix",
+        "rev": "d5fe5f4b210a0e4bac42ae0c159596a49c5eb016",
+        "type": "github"
+      },
+      "original": {
+        "owner": "justinwoo",
+        "repo": "easy-purescript-nix",
+        "type": "github"
+      }
+    },
+    "kafka-connector-http-source": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-RqKSLSXkfoK9RJljRSIQ7xzez/m4VZzpsVNVcje2R3Q=",
+        "type": "file",
+        "url": "https://github.com/castorm/kafka-connect-http/releases/download/v0.8.11/castorm-kafka-connect-http-0.8.11.zip"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/castorm/kafka-connect-http/releases/download/v0.8.11/castorm-kafka-connect-http-0.8.11.zip"
+      }
+    },
+    "kcat-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1642580593,
+        "narHash": "sha256-pCIYNx0GYPGDYzTLq9h/LbOrJjhKWLAV4gq07Ikl5O4=",
+        "owner": "edenhill",
+        "repo": "kcat",
+        "rev": "9ca33cdbb8cb1f762d118ef76f96711125ccb091",
+        "type": "github"
+      },
+      "original": {
+        "owner": "edenhill",
+        "ref": "1.7.1",
+        "repo": "kcat",
+        "type": "github"
+      }
+    },
+    "libserdes-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1648843643,
+        "narHash": "sha256-AHqWpdlW2Fe25R/jXQxZD9MldCdMCB99wEkY+DASL1c=",
+        "owner": "confluentinc",
+        "repo": "libserdes",
+        "rev": "ec2175cb190e61d0b7c247ee0449da825520571a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "confluentinc",
+        "ref": "v6.2.4",
+        "repo": "libserdes",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1701282334,
+        "narHash": "sha256-MxCVrXY6v4QmfTwIysjjaX0XUhqBbxTWWB4HXtDYsdk=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "057f9aecfb71c4437d2b27d3323df7f93c010b7e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "23.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1701282334,
+        "narHash": "sha256-MxCVrXY6v4QmfTwIysjjaX0XUhqBbxTWWB4HXtDYsdk=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "057f9aecfb71c4437d2b27d3323df7f93c010b7e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "23.11",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "rdkafka-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1698173350,
+        "narHash": "sha256-F67aKmyMmqBVG5sF8ZwqemmfvVi/0bDjaiugKKSipuA=",
+        "owner": "edenhill",
+        "repo": "librdkafka",
+        "rev": "95a542c87c61d2c45b445f91c73dd5442eb04f3c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "edenhill",
+        "ref": "v2.3.0",
+        "repo": "librdkafka",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "confluent": "confluent",
+        "easy-purescript-nix": "easy-purescript-nix",
+        "nixpkgs": "nixpkgs_2",
+        "utils": "utils_2"
+      }
+    },
+    "systems": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "systems_2": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
+        "type": "github"
+      }
+    },
+    "utils": {
+      "inputs": {
+        "systems": "systems"
+      },
+      "locked": {
+        "lastModified": 1705309234,
+        "narHash": "sha256-uNRRNRKmJyCRC/8y1RqBkqWBLM034y4qN7EprSdmgyA=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "1ef2e671c3b0c19053962c07dbda38332dcebf26",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "utils_2": {
+      "inputs": {
+        "systems": "systems_2"
+      },
+      "locked": {
+        "lastModified": 1705309234,
+        "narHash": "sha256-uNRRNRKmJyCRC/8y1RqBkqWBLM034y4qN7EprSdmgyA=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "1ef2e671c3b0c19053962c07dbda38332dcebf26",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
