@@ -59,8 +59,7 @@ handleAction Initialize = do
   _subscription <- H.subscribe $ MessageReceived <$> websocketChannels.fromServer
   pure unit
 
-handleAction (MessageReceived msg) = do
-  assign _messages msg
+handleAction (MessageReceived msg) = assign _messages msg
 
 handleAction (MovePlayer direction) = do
   websocketChannels <- use _websocketChannels
