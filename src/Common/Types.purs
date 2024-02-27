@@ -22,7 +22,7 @@ derive newtype instance eqPlayerId :: Eq PlayerId
 derive newtype instance ordPlayerId :: Ord PlayerId
 
 instance showPlayerId :: Show PlayerId where
-  show x = genericShow x
+  show (PlayerId uuid) = "(PlayerId " <> UUID.toString uuid <> ")"
 
 instance readForeignPlayerId :: ReadForeign PlayerId where
   readImpl x = do
@@ -50,12 +50,13 @@ derive newtype instance writeForeignClientMessage :: WriteForeign ClientMessage
 ------------------------------------------------------------
 newtype ServerMessage
   = ServerMessage
-  { statuses ::
-      Array
-        { user :: PlayerId
-        , message :: String
-        }
-  }
+  { board :: Board }
+
+type Board
+  = Array
+      { playerId :: PlayerId
+      , playerState :: String
+      }
 
 derive instance genericServerMessage :: Generic ServerMessage _
 

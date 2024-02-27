@@ -2,9 +2,10 @@ module Client.View (render) where
 
 import Prelude hiding (div)
 import Client.Types (Action(..), Direction(..), State(..))
-import Common.Types (ServerMessage)
+import Client.View.SVG (renderBoard)
+import Common.Types (PlayerId, ServerMessage(..))
 import Halogen (ClassName(..), ComponentHTML)
-import Halogen.HTML (HTML, button, div, h1, i, text)
+import Halogen.HTML (HTML, button, div, h1, h2, i, text)
 import Halogen.HTML.Events (onClick)
 import Halogen.HTML.Properties (classes)
 import Network.RemoteData (RemoteData(..))
@@ -36,4 +37,22 @@ viewRemoteData f value = case value of
   Success payloads -> f payloads
 
 viewMessages :: forall p i. ServerMessage -> HTML p i
-viewMessages message = div [] [ text $ show message ]
+viewMessages (ServerMessage { board }) =
+  div []
+    [ h2 [] [ text "Board" ]
+    , renderBoard board
+    , div [] (viewPlayer <$> board)
+    ]
+
+viewPlayer ::
+  forall p i.
+  { playerId :: PlayerId
+  , playerState :: String
+  } ->
+  HTML p i
+viewPlayer { playerId, playerState } =
+  div []
+    [ text $ show playerId
+    , text " "
+    , text $ playerState
+    ]

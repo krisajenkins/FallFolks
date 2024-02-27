@@ -1,11 +1,12 @@
 module Server.Websocket (main, shutdown, broadcast, State) where
 
 import Prelude
-import Data.Tuple.Nested ((/\))
-import Common.Types (PlayerId(..), ServerMessage(..))
+
+import Common.Types (PlayerId(..), ServerMessage(..), Board)
 import Data.Map (Map)
 import Data.Map as Map
 import Data.Traversable (traverse_)
+import Data.Tuple.Nested ((/\))
 import Data.UUID (genUUID)
 import Effect (Effect)
 import Effect.Console (log)
@@ -93,12 +94,17 @@ getBoard :: State -> Effect ServerMessage
 getBoard (State state) = do
   currentMessages <- Ref.read state.lastMessage
   pure
-    $ ( ServerMessage
-          { statuses:
-              currentMessages
-                # Map.toUnfoldable
-                # map
-                    ( \(playerId /\ msg) -> { user: playerId, message: msg }
-                    )
-          }
-      )
+    $ ServerMessage
+        { board: toBoard currentMessages
+        }
+
+toBoard :: Map PlayerId String -> Board
+toBoard currentMessages =
+  currentMessages
+    # Map.toUnfoldable
+    # map
+        ( \(playerId /\ playerState) ->
+            { playerId
+            , playerState
+            }
+        )
