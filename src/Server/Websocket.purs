@@ -1,15 +1,14 @@
 module Server.Websocket (main, shutdown, broadcast, State) where
 
 import Prelude
-
 import Common.Types (PlayerId(..), ServerMessage(..), Board)
+import Logging (log)
 import Data.Map (Map)
 import Data.Map as Map
 import Data.Traversable (traverse_)
 import Data.Tuple.Nested ((/\))
 import Data.UUID (genUUID)
 import Effect (Effect)
-import Effect.Console (log)
 import Effect.Ref (Ref)
 import Effect.Ref as Ref
 import Prim.TypeError (class Warn, Text)

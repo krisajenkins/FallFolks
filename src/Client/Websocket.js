@@ -10,6 +10,5 @@ export const onmessage = (websocketClient) => (handler) => () => {
     };
 };
 export const send = (websocketClient) => (msg) => () => {
-    console.log("Sending", msg);
     websocketClient.send(msg);
 }

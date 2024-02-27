@@ -9,12 +9,12 @@ import Data.Lens (assign, use)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Effect.Class (class MonadEffect, liftEffect)
-import Effect.Console (log)
 import Halogen (Component, HalogenM, defaultEval, mkComponent, mkEval)
 import Halogen as H
 import Halogen.Aff as HA
 import Halogen.Subscription (notify)
 import Halogen.VDom.Driver (runUI)
+import Logging (class MonadLog, log)
 import Network.RemoteData (RemoteData(..))
 
 main :: Effect Unit
@@ -27,6 +27,7 @@ main =
 component ::
   forall q i o m.
   MonadEffect m =>
+  MonadLog m =>
   (WebsocketChannels ServerMessage ClientMessage) -> Component q i o m
 component websocketChannels = do
   mkComponent
@@ -51,6 +52,7 @@ initialState websocketChannels =
 handleAction ::
   forall o m.
   MonadEffect m =>
+  MonadLog m =>
   Action -> HalogenM State Action () o m Unit
 handleAction Initialize = do
   websocketChannels <- use _websocketChannels
@@ -62,5 +64,5 @@ handleAction (MessageReceived msg) = do
 
 handleAction (MovePlayer direction) = do
   websocketChannels <- use _websocketChannels
-  liftEffect $ log "Sending"
+  log $ "Sending: " <> show direction
   liftEffect $ notify websocketChannels.toServer (SetName (show direction))
