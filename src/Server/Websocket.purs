@@ -1,13 +1,14 @@
 module Server.Websocket (main, shutdown, broadcast, State) where
 
 import Prelude
-import Common.Types (ServerMessage(..))
+import Data.Tuple.Nested ((/\))
+import Common.Types (PlayerId(..), ServerMessage(..))
 import Data.Map (Map)
 import Data.Map as Map
 import Data.Traversable (traverse_)
-import Data.UUID (UUID, genUUID)
+import Data.UUID (genUUID)
 import Effect (Effect)
-import Effect.Console (logShow, log)
+import Effect.Console (log)
 import Effect.Ref (Ref)
 import Effect.Ref as Ref
 import Prim.TypeError (class Warn, Text)
@@ -38,18 +39,19 @@ main ::
 main config = do
   server <- createServer config
   connections <- Ref.new Map.empty
+  lastMessage <- Ref.new Map.empty
   let
-    state = { connections }
+    state = { connections, lastMessage }
   onConnection server
     $ \connection -> do
-        newId <- genUUID
+        newId <- PlayerId <$> genUUID
         Ref.modify_ (Map.insert newId connection) state.connections
-        narrowcast connection (ServerMessage { statuses: [ { name: "HELLO" } ] })
+        narrowcastBoard connection (State state)
         onMessage connection
-          ( \msg -> do
-              log $ "RECEVIED A MESSAGE: " <> msg
-              narrowcast connection
-                (ServerMessage { statuses: [ { name: msg } ] })
+          ( \message -> do
+              log $ "Recevied: " <> message
+              Ref.modify_ (Map.insert newId message) state.lastMessage
+              broadcastBoard (State state)
           )
   pure $ State state
 
@@ -58,7 +60,8 @@ shutdown _state = pure unit
 
 data State
   = State
-    { connections :: Ref (Map UUID WebsocketConnection)
+    { connections :: Ref (Map PlayerId WebsocketConnection)
+    , lastMessage :: Ref (Map PlayerId String)
     }
 
 -- | Send the state to everyone.
@@ -72,3 +75,30 @@ broadcast (State state) msg = do
     json = writeJSON msg
   connections <- Ref.read state.connections
   traverse_ (flip send json) connections
+
+narrowcastBoard ::
+  WebsocketConnection ->
+  State ->
+  Effect Unit
+narrowcastBoard connection state = do
+  serverMessage <- getBoard state
+  narrowcast connection serverMessage
+
+broadcastBoard :: State -> Effect Unit
+broadcastBoard (State state) = do
+  serverMessage <- getBoard (State state)
+  broadcast (State state) serverMessage
+
+getBoard :: State -> Effect ServerMessage
+getBoard (State state) = do
+  currentMessages <- Ref.read state.lastMessage
+  pure
+    $ ( ServerMessage
+          { statuses:
+              currentMessages
+                # Map.toUnfoldable
+                # map
+                    ( \(playerId /\ msg) -> { user: playerId, message: msg }
+                    )
+          }
+      )

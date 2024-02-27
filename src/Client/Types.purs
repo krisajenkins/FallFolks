@@ -1,7 +1,7 @@
 module Client.Types where
 
 import Prelude
-import Client.Websocket (WebsocketClient, KWS)
+import Client.Websocket (WebsocketClient, WebsocketChannels)
 import Common.Types (ClientMessage, ServerMessage)
 import Data.Lens (Lens')
 import Data.Lens.Iso.Newtype (_Newtype)
@@ -16,7 +16,7 @@ newtype State
   = State
   { websocketClient :: Maybe WebsocketClient
   , messages :: RemoteData MultipleErrors ServerMessage
-  , kws :: KWS ServerMessage ClientMessage
+  , websocketChannels :: WebsocketChannels ServerMessage ClientMessage
   }
 
 derive instance newtypeState :: Newtype State _
@@ -24,14 +24,12 @@ derive instance newtypeState :: Newtype State _
 _websocketClient :: Lens' State (Maybe WebsocketClient)
 _websocketClient = _Newtype <<< prop (Proxy :: Proxy "websocketClient")
 
-_kws :: Lens' State (KWS ServerMessage ClientMessage)
-_kws = _Newtype <<< prop (Proxy :: Proxy "kws")
+_websocketChannels :: Lens' State (WebsocketChannels ServerMessage ClientMessage)
+_websocketChannels = _Newtype <<< prop (Proxy :: Proxy "websocketChannels")
 
 _messages :: Lens' State (RemoteData MultipleErrors ServerMessage)
 _messages = _Newtype <<< prop (Proxy :: Proxy "messages")
 
--- _socket :: Lens' State (Listener ClientMessage)
--- _socket = _Newtype <<< prop (Proxy :: Proxy "socket")
 data Action
   = Initialize
   | MessageReceived (RemoteData MultipleErrors ServerMessage)

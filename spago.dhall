@@ -20,9 +20,11 @@ to generate this file without the comments in this block.
   , "halogen"
   , "halogen-subscriptions"
   , "js-date"
+  , "lists"
   , "logging"
   , "maybe"
   , "newtype"
+  , "nonempty"
   , "ordered-collections"
   , "prelude"
   , "profunctor-lenses"
@@ -30,6 +32,8 @@ to generate this file without the comments in this block.
   , "remotedata"
   , "simple-json"
   , "spec"
+  , "transformers"
+  , "tuples"
   , "uuid"
   ]
 , packages = ./packages.dhall

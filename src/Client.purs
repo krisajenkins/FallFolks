@@ -1,10 +1,9 @@
 module Client where
 
 import Prelude
-
-import Client.Types (Action(..), State(..), _kws, _messages)
+import Client.Types (Action(..), State(..), _websocketChannels, _messages)
 import Client.View (render)
-import Client.Websocket (KWS, makeKWS)
+import Client.Websocket (WebsocketChannels, makeWebsocketChannels)
 import Common.Types (ClientMessage(..), ServerMessage)
 import Data.Lens (assign, use)
 import Data.Maybe (Maybe(..))
@@ -21,14 +20,17 @@ import Network.RemoteData (RemoteData(..))
 main :: Effect Unit
 main =
   HA.runHalogenAff do
-    kws <- makeKWS
+    websocketChannels <- makeWebsocketChannels
     body <- HA.awaitBody
-    runUI (component kws) unit body
+    runUI (component websocketChannels) unit body
 
-component :: forall q i o m. MonadEffect m => (KWS ServerMessage ClientMessage) -> Component q i o m
-component kws = do
+component ::
+  forall q i o m.
+  MonadEffect m =>
+  (WebsocketChannels ServerMessage ClientMessage) -> Component q i o m
+component websocketChannels = do
   mkComponent
-    { initialState: const $ initialState kws
+    { initialState: const $ initialState websocketChannels
     , render
     , eval:
         mkEval
@@ -38,12 +40,12 @@ component kws = do
               }
     }
 
-initialState :: KWS ServerMessage ClientMessage -> State
-initialState kws =
+initialState :: WebsocketChannels ServerMessage ClientMessage -> State
+initialState websocketChannels =
   State
     { websocketClient: Nothing
     , messages: NotAsked
-    , kws
+    , websocketChannels
     }
 
 handleAction ::
@@ -51,15 +53,14 @@ handleAction ::
   MonadEffect m =>
   Action -> HalogenM State Action () o m Unit
 handleAction Initialize = do
-  kws <- use _kws
-  _subscription <- H.subscribe $ MessageReceived <$> kws.fromServer
+  websocketChannels <- use _websocketChannels
+  _subscription <- H.subscribe $ MessageReceived <$> websocketChannels.fromServer
   pure unit
 
 handleAction (MessageReceived msg) = do
   assign _messages msg
 
 handleAction (MovePlayer direction) = do
-  kws <- use _kws
+  websocketChannels <- use _websocketChannels
   liftEffect $ log "Sending"
-  liftEffect $ notify kws.toServer (SetName (show direction))
-  pure unit
+  liftEffect $ notify websocketChannels.toServer (SetName (show direction))

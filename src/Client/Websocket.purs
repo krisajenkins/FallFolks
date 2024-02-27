@@ -21,18 +21,18 @@ foreign import onmessage :: WebsocketClient -> (String -> Effect Unit) -> Effect
 
 foreign import send :: WebsocketClient -> String -> Effect Unit
 
-type KWS from to
+type WebsocketChannels from to
   = { fromServer :: Emitter (RemoteData MultipleErrors from)
     , toServer :: Listener to
     }
 
-makeKWS ::
+makeWebsocketChannels ::
   forall m from to.
   MonadEffect m =>
   ReadForeign from =>
   WriteForeign to =>
-  m (KWS from to)
-makeKWS = do
+  m (WebsocketChannels from to)
+makeWebsocketChannels = do
   { from, to } <-
     liftEffect
       $ do

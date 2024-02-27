@@ -19,12 +19,3 @@ export const onMessage = (websocketConnection) => (handler) => () => {
 export const send = (websocketConnection) => (msg) => () => {
     websocketConnection.send(msg);
 };
-
-// ws.on("message", function message(data) {
-// console.log("Handling.", websocketConnection);
-// console.log("Handling.", websocketConnection);
-// console.log("Handling.", websocketConnection);
-//   console.log("received: %s", data);
-// });
-
-// ws.send("something");
