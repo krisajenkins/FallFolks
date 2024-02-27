@@ -5,7 +5,6 @@ module Logging
   ) where
 
 import Prelude
-
 import Control.Logger (Logger(..))
 import Control.Logger as Logging
 import Data.JSDate as JSDate
