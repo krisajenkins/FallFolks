@@ -1,4 +1,4 @@
-module Server.Websocket where
+module Websocket.Server where
 
 import Prelude
 import Effect (Effect)

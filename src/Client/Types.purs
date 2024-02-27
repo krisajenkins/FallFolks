@@ -1,7 +1,7 @@
 module Client.Types where
 
 import Prelude
-import Client.Websocket (WebsocketClient, WebsocketChannels)
+import Websocket.Client (WebsocketClient, WebsocketChannels)
 import Common.Types (ClientMessage, ServerMessage)
 import Data.Lens (Lens')
 import Data.Lens.Iso.Newtype (_Newtype)

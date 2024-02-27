@@ -14,7 +14,7 @@ import Prim.TypeError (class Warn, Text)
 import Server.Game (GameState(..), toBoard)
 import Server.Game as Game
 import Server.Types (State(..))
-import Server.Websocket (WebsocketConnection, WebsocketServerConfig, createServer, onConnection, onMessage, send)
+import Websocket.Server (WebsocketConnection, WebsocketServerConfig, createServer, onConnection, onMessage, send)
 import Simple.JSON (writeJSON)
 
 main :: Effect Unit

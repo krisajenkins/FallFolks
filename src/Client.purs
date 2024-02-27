@@ -3,7 +3,7 @@ module Client where
 import Prelude
 import Client.Types (Action(..), State(..), _websocketChannels, _messages)
 import Client.View (render)
-import Client.Websocket (WebsocketChannels, makeWebsocketChannels)
+import Websocket.Client (WebsocketChannels, makeWebsocketChannels)
 import Common.Types (ClientMessage(..), ServerMessage)
 import Data.Lens (assign, use)
 import Data.Maybe (Maybe(..))
