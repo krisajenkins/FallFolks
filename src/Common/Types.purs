@@ -2,6 +2,10 @@ module Common.Types where
 
 import Prelude
 import Control.Monad.Except (throwError)
+import Control.Monad.Gen (class MonadGen)
+import Control.Monad.Gen as Gen
+import Data.Array (catMaybes)
+import Data.Array.NonEmpty as NonEmpty
 import Data.Generic.Rep (class Generic)
 import Data.List.Types (NonEmptyList(..))
 import Data.Maybe (Maybe(..))
@@ -11,6 +15,7 @@ import Data.UUID (UUID, parseUUID)
 import Data.UUID as UUID
 import Foreign (ForeignError(..))
 import Simple.JSON (class ReadForeign, class WriteForeign, readImpl, writeImpl)
+import Test.QuickCheck.Arbitrary (class Arbitrary)
 
 newtype PlayerId
   = PlayerId UUID
@@ -20,6 +25,27 @@ derive instance genericPlayerId :: Generic PlayerId _
 derive newtype instance eqPlayerId :: Eq PlayerId
 
 derive newtype instance ordPlayerId :: Ord PlayerId
+
+instance arbitraryPlayerId :: Arbitrary PlayerId where
+  arbitrary = PlayerId <$> arbitraryUUID
+
+arbitraryUUID :: forall m. MonadGen m => m UUID
+arbitraryUUID =
+  [ "0805fe16-d59a-11ee-84ac-325096b39f47"
+  , "08060078-d59a-11ee-aac8-325096b39f47"
+  , "080600fa-d59a-11ee-b905-325096b39f47"
+  , "08060172-d59a-11ee-ab7c-325096b39f47"
+  , "080601ea-d59a-11ee-92d1-325096b39f47"
+  , "08060244-d59a-11ee-b46e-325096b39f47"
+  , "08060302-d59a-11ee-b741-325096b39f47"
+  , "08060370-d59a-11ee-bf21-325096b39f47"
+  , "080603d4-d59a-11ee-b842-325096b39f47"
+  , "0806042e-d59a-11ee-86c0-325096b39f47"
+  ]
+    # map UUID.parseUUID
+    # catMaybes
+    # NonEmpty.cons' UUID.emptyUUID
+    # Gen.elements
 
 instance showPlayerId :: Show PlayerId where
   show (PlayerId uuid) = "(PlayerId " <> UUID.toString uuid <> ")"
