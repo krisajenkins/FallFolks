@@ -5,17 +5,21 @@ import Control.Monad.Except (throwError)
 import Control.Monad.Gen (class MonadGen)
 import Control.Monad.Gen as Gen
 import Data.Array (catMaybes)
-import Data.Array.NonEmpty as NonEmpty
+import Data.Array.NonEmpty as NonEmptyArray
 import Data.Generic.Rep (class Generic)
+import Data.Generic.Rep as Generic
 import Data.List.Types (NonEmptyList(..))
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), fromJust)
 import Data.NonEmpty (NonEmpty(..))
 import Data.Show.Generic (genericShow)
 import Data.UUID (UUID, parseUUID)
 import Data.UUID as UUID
 import Foreign (ForeignError(..))
+import Partial.Unsafe (unsafePartial)
 import Simple.JSON (class ReadForeign, class WriteForeign, readImpl, writeImpl)
-import Test.QuickCheck.Arbitrary (class Arbitrary)
+import Simple.JSON.Generic (readSumRep, writeSumRep)
+import Test.QuickCheck.Arbitrary (class Arbitrary, arbitraryGenericSum, genericArbitrary)
+import Test.QuickCheck.Gen (Gen)
 
 newtype PlayerId
   = PlayerId UUID
@@ -44,7 +48,7 @@ arbitraryUUID =
   ]
     # map UUID.parseUUID
     # catMaybes
-    # NonEmpty.cons' UUID.emptyUUID
+    # NonEmptyArray.cons' UUID.emptyUUID
     # Gen.elements
 
 instance showPlayerId :: Show PlayerId where
@@ -61,17 +65,25 @@ instance writeForeignPlayerId :: WriteForeign PlayerId where
   writeImpl (PlayerId x) = writeImpl (UUID.toString x)
 
 ------------------------------------------------------------
-newtype ClientMessage
+data ClientMessage
   = SetName String
+  | Move Direction
+
+derive instance eqClientMessage :: Eq ClientMessage
 
 derive instance genericClientMessage :: Generic ClientMessage _
+
+instance arbitraryClientMessage :: Arbitrary ClientMessage where
+  arbitrary = genericArbitrary
 
 instance showClientMessage :: Show ClientMessage where
   show x = genericShow x
 
-derive newtype instance readForeignClientMessage :: ReadForeign ClientMessage
+instance writeForeignClientMessage :: WriteForeign ClientMessage where
+  writeImpl x = writeSumRep $ Generic.from x
 
-derive newtype instance writeForeignClientMessage :: WriteForeign ClientMessage
+instance readForeignClientMessage :: ReadForeign ClientMessage where
+  readImpl x = Generic.to <$> readSumRep x
 
 ------------------------------------------------------------
 newtype ServerMessage
@@ -84,11 +96,44 @@ type Board
       , playerState :: String
       }
 
+derive newtype instance eqServerMessage :: Eq ServerMessage
+
 derive instance genericServerMessage :: Generic ServerMessage _
 
 instance showServerMessage :: Show ServerMessage where
   show x = genericShow x
 
+derive newtype instance arbitraryServerMessage :: Arbitrary ServerMessage
+
 derive newtype instance readForeignServerMessage :: ReadForeign ServerMessage
 
 derive newtype instance writeForeignServerMessage :: WriteForeign ServerMessage
+
+------------------------------------------------------------
+data Direction
+  = North
+  | South
+  | West
+  | East
+
+derive instance eqDirection :: Eq Direction
+
+derive instance genericDirection :: Generic Direction _
+
+instance showDirection :: Show Direction where
+  show x = genericShow x
+
+instance arbitraryDirection :: Arbitrary Direction where
+  arbitrary = y
+    where
+    x :: Array (Gen Direction)
+    x = map Generic.to <$> arbitraryGenericSum
+
+    y :: Gen Direction
+    y = Gen.oneOf $ unsafePartial $ fromJust $ NonEmptyArray.fromArray x
+
+instance writeForeignDirection :: WriteForeign Direction where
+  writeImpl x = writeSumRep (Generic.from x)
+
+instance readForeignDirection :: ReadForeign Direction where
+  readImpl x = Generic.to <$> readSumRep x

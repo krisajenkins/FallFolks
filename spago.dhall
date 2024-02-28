@@ -15,7 +15,9 @@ to generate this file without the comments in this block.
   [ "aff"
   , "arrays"
   , "console"
+  , "control"
   , "effect"
+  , "either"
   , "foldable-traversable"
   , "foreign"
   , "gen"
@@ -29,6 +31,7 @@ to generate this file without the comments in this block.
   , "newtype"
   , "nonempty"
   , "ordered-collections"
+  , "partial"
   , "prelude"
   , "profunctor-lenses"
   , "quickcheck"
@@ -39,6 +42,7 @@ to generate this file without the comments in this block.
   , "spec-quickcheck"
   , "transformers"
   , "tuples"
+  , "typelevel-prelude"
   , "uuid"
   ]
 , packages = ./packages.dhall
