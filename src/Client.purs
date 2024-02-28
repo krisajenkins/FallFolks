@@ -63,5 +63,6 @@ handleAction (MessageReceived msg) = assign _messages msg
 
 handleAction (MovePlayer direction) = do
   websocketChannels <- use _websocketChannels
-  log $ "Sending: " <> show direction
-  liftEffect $ notify websocketChannels.toServer (SetName (show direction))
+  let msg = Move direction
+  log $ "Sending: " <> show msg
+  liftEffect $ notify websocketChannels.toServer msg

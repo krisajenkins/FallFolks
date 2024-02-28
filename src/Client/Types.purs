@@ -1,8 +1,8 @@
 module Client.Types where
 
 import Prelude
-import Websocket.Client (WebsocketClient, WebsocketChannels)
-import Common.Types (ClientMessage, ServerMessage)
+
+import Common.Types (ClientMessage, Direction, ServerMessage)
 import Data.Lens (Lens')
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Lens.Record (prop)
@@ -11,6 +11,7 @@ import Data.Newtype (class Newtype)
 import Foreign (MultipleErrors)
 import Network.RemoteData (RemoteData)
 import Type.Proxy (Proxy(..))
+import Websocket.Client (WebsocketClient, WebsocketChannels)
 
 newtype State
   = State
@@ -34,15 +35,3 @@ data Action
   = Initialize
   | MessageReceived (RemoteData MultipleErrors ServerMessage)
   | MovePlayer Direction
-
-data Direction
-  = North
-  | South
-  | West
-  | East
-
-instance showDirection :: Show Direction where
-  show North = "North"
-  show South = "South"
-  show West = "West"
-  show East = "East"

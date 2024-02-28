@@ -1,21 +1,25 @@
 module Server (main) where
 
 import Prelude
-import Common.Types (PlayerId(..), ServerMessage(..))
+import Common.Types (ClientMessage, PlayerId(..), ServerMessage(..))
+import Data.Either (Either(..))
 import Data.Map as Map
+import Data.Newtype (over)
 import Data.Traversable (traverse_)
 import Data.UUID (genUUID)
 import Effect (Effect)
 import Effect.Aff (bracket, launchAff_)
+import Effect.Aff as Aff
 import Effect.Class (liftEffect)
 import Effect.Ref as Ref
+import Foreign (MultipleErrors)
 import Logging (log)
 import Prim.TypeError (class Warn, Text)
 import Server.Game (GameState(..), toBoard)
 import Server.Game as Game
 import Server.Types (State(..))
+import Simple.JSON (readJSON, writeJSON)
 import Websocket.Server (WebsocketConnection, WebsocketServerConfig, createServer, onConnection, onMessage, send)
-import Simple.JSON (writeJSON)
 
 main :: Effect Unit
 main = do
@@ -46,14 +50,26 @@ startWebsocketServer config = do
     state = { connections, gameState }
   onConnection server
     $ \connection -> do
-        newId <- PlayerId <$> genUUID
-        Ref.modify_ (Map.insert newId connection) state.connections
+        playerId <- PlayerId <$> genUUID
+        Ref.modify_ (Map.insert playerId connection) state.connections
+        Ref.modify_
+          ( over GameState
+              (Map.insert playerId (Game.newPlayer playerId))
+          )
+          state.gameState
         narrowcastBoard connection (State state)
         onMessage connection
-          ( \message -> do
-              log $ "Recevied: " <> message
-              Ref.modify_ (Game.process newId message) state.gameState
-              broadcastBoard (State state)
+          ( \rawMessage -> do
+              log $ "Recevied: " <> rawMessage
+              let
+                message :: Either MultipleErrors ClientMessage
+                message = readJSON rawMessage
+              log $ "Decoded: " <> show message
+              case message of
+                Left err -> log $ "ERROR: " <> show err
+                Right clientMessage -> do
+                  Ref.modify_ (Game.process playerId clientMessage) state.gameState
+                  broadcastBoard (State state)
           )
   pure $ State state
 
@@ -82,6 +98,7 @@ narrowcastBoard connection state = do
 
 broadcastBoard :: State -> Effect Unit
 broadcastBoard (State state) = do
+  log "Broadcasting board"
   serverMessage <- getBoard (State state)
   broadcast (State state) serverMessage
 

@@ -93,7 +93,7 @@ newtype ServerMessage
 type Board
   = Array
       { playerId :: PlayerId
-      , playerState :: String
+      , playerState :: Position
       }
 
 derive newtype instance eqServerMessage :: Eq ServerMessage
@@ -108,6 +108,23 @@ derive newtype instance arbitraryServerMessage :: Arbitrary ServerMessage
 derive newtype instance readForeignServerMessage :: ReadForeign ServerMessage
 
 derive newtype instance writeForeignServerMessage :: WriteForeign ServerMessage
+
+------------------------------------------------------------
+newtype Position
+  = Position { x :: Int, y :: Int }
+
+derive instance eqPosition :: Eq Position
+
+derive instance genericPosition :: Generic Position _
+
+instance showPosition :: Show Position where
+  show x = genericShow x
+
+derive newtype instance readForeignPosition :: ReadForeign Position
+
+derive newtype instance arbitraryPosition :: Arbitrary Position
+
+derive newtype instance writeForeignPosition :: WriteForeign Position
 
 ------------------------------------------------------------
 data Direction
@@ -137,3 +154,12 @@ instance writeForeignDirection :: WriteForeign Direction where
 
 instance readForeignDirection :: ReadForeign Direction where
   readImpl x = Generic.to <$> readSumRep x
+
+oppositeDirection :: Direction -> Direction
+oppositeDirection North = South
+
+oppositeDirection South = North
+
+oppositeDirection West = East
+
+oppositeDirection East = West

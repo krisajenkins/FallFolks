@@ -1,9 +1,9 @@
 module Client.View (render) where
 
 import Prelude hiding (div)
-import Client.Types (Action(..), Direction(..), State(..))
+import Client.Types (Action(..), State(..))
 import Client.View.SVG (renderBoard)
-import Common.Types (PlayerId, ServerMessage(..))
+import Common.Types (Direction(..), PlayerId, Position(..), ServerMessage(..))
 import Halogen (ClassName(..), ComponentHTML)
 import Halogen.HTML (HTML, button, div, h1, h2, i, text)
 import Halogen.HTML.Events (onClick)
@@ -40,19 +40,21 @@ viewMessages :: forall p i. ServerMessage -> HTML p i
 viewMessages (ServerMessage { board }) =
   div []
     [ h2 [] [ text "Board" ]
-    , renderBoard board
     , div [] (viewPlayer <$> board)
+    , renderBoard board
     ]
 
 viewPlayer ::
   forall p i.
   { playerId :: PlayerId
-  , playerState :: String
+  , playerState :: Position
   } ->
   HTML p i
-viewPlayer { playerId, playerState } =
+viewPlayer { playerId, playerState: Position { x, y } } =
   div []
     [ text $ show playerId
+    , text ": "
+    , text $ show x
     , text " "
-    , text $ playerState
+    , text $ show y
     ]
