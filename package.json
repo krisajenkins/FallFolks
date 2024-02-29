@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@parcel/transformer-sass": "^2.12.0",
     "bootstrap": "^5.3.3",
     "node-websocket": "^0.1.6",
     "parcel": "^2.11.0",
@@ -10,6 +11,10 @@
   "scripts": {
     "dev": "parcel entry.js index.html",
     "server": "spago run -m Server",
+    "build": "parcel build index.html --detailed-report",
     "format": "find src test -name \\*.purs -exec purty --write {} \\;"
+  },
+  "devDependencies": {
+    "@parcel/reporter-bundle-analyzer": "^2.12.0"
   }
 }

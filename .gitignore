@@ -12,3 +12,4 @@
 /.parcel-cache
 /dist
 /yarn-error.log
+/parcel-bundle-reports
