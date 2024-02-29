@@ -43,9 +43,9 @@ process player (Move direction) (GameState state) = GameState (Map.update (Just 
 process _player (SetName _name) (GameState state) = (GameState state)
 
 move :: Direction -> Position -> Position
-move North (Position { x, y }) = Position { x, y: y + 1 }
+move North (Position { x, y }) = Position { x, y: y - 1 }
 
-move South (Position { x, y }) = Position { x, y: y - 1 }
+move South (Position { x, y }) = Position { x, y: y + 1 }
 
 move West (Position { x, y }) = Position { x: x - 1, y }
 

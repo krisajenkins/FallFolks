@@ -86,15 +86,20 @@ instance readForeignClientMessage :: ReadForeign ClientMessage where
   readImpl x = Generic.to <$> readSumRep x
 
 ------------------------------------------------------------
-newtype ServerMessage
-  = ServerMessage
-  { board :: Board }
+type PlayerState
+  = { playerId :: PlayerId
+    , playerState :: Position
+    }
 
 type Board
-  = Array
-      { playerId :: PlayerId
-      , playerState :: Position
-      }
+  = Array PlayerState
+
+------------------------------------------------------------
+newtype ServerMessage
+  = ServerMessage
+  { board :: Board
+  , playerId :: PlayerId
+  }
 
 derive newtype instance eqServerMessage :: Eq ServerMessage
 

@@ -3,7 +3,7 @@ module Client.View (render) where
 import Prelude hiding (div)
 import Client.Types (Action(..), State(..))
 import Client.View.SVG (renderBoard)
-import Common.Types (Direction(..), PlayerId, Position(..), ServerMessage(..))
+import Common.Types (Direction(..), PlayerId, PlayerState, Position(..), ServerMessage(..))
 import Halogen (ClassName(..), ComponentHTML)
 import Halogen.HTML (HTML, button, div, h1, h2, i, text)
 import Halogen.HTML.Events (onClick)
@@ -37,22 +37,17 @@ viewRemoteData f value = case value of
   Success payloads -> f payloads
 
 viewMessages :: forall p i. ServerMessage -> HTML p i
-viewMessages (ServerMessage { board }) =
+viewMessages (ServerMessage gameState) =
   div []
     [ h2 [] [ text "Board" ]
-    , div [] (viewPlayer <$> board)
-    , renderBoard board
+    , renderBoard gameState
+    , div [] (viewPlayer gameState.playerId <$> gameState.board)
     ]
 
-viewPlayer ::
-  forall p i.
-  { playerId :: PlayerId
-  , playerState :: Position
-  } ->
-  HTML p i
-viewPlayer { playerId, playerState: Position { x, y } } =
+viewPlayer :: forall p i. PlayerId -> PlayerState -> HTML p i
+viewPlayer myPlayerId { playerId, playerState: Position { x, y } } =
   div []
-    [ text $ show playerId
+    [ text $ if playerId == myPlayerId then "Me" else show playerId
     , text ": "
     , text $ show x
     , text " "

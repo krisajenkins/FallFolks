@@ -1,15 +1,15 @@
 module Server (main) where
 
+import Data.Tuple.Nested (type (/\), (/\))
 import Prelude
-import Common.Types (ClientMessage, PlayerId(..), ServerMessage(..))
+import Common.Types (ClientMessage, PlayerId(..), ServerMessage(..), Board)
 import Data.Either (Either(..))
 import Data.Map as Map
 import Data.Newtype (over)
-import Data.Traversable (traverse_)
+import Data.TraversableWithIndex (traverseWithIndex)
 import Data.UUID (genUUID)
 import Effect (Effect)
 import Effect.Aff (bracket, launchAff_)
-import Effect.Aff as Aff
 import Effect.Class (liftEffect)
 import Effect.Ref as Ref
 import Foreign (MultipleErrors)
@@ -57,7 +57,7 @@ startWebsocketServer config = do
               (Map.insert playerId (Game.newPlayer playerId))
           )
           state.gameState
-        narrowcastBoard connection (State state)
+        narrowcastBoard (playerId /\ connection) (State state)
         onMessage connection
           ( \rawMessage -> do
               log $ "Recevied: " <> rawMessage
@@ -81,31 +81,31 @@ narrowcast :: WebsocketConnection -> ServerMessage -> Effect Unit
 narrowcast connection msg = do
   send connection $ writeJSON msg
 
-broadcast :: State -> ServerMessage -> Effect Unit
-broadcast (State state) msg = do
-  let
-    json = writeJSON msg
+broadcast :: State -> Board -> Effect Unit
+broadcast (State state) board = do
   connections <- Ref.read state.connections
-  traverse_ (flip send json) connections
+  void
+    $ traverseWithIndex
+        ( \playerId connection ->
+            send connection $ writeJSON $ ServerMessage { playerId, board }
+        )
+        connections
 
 narrowcastBoard ::
-  WebsocketConnection ->
+  (PlayerId /\ WebsocketConnection) ->
   State ->
   Effect Unit
-narrowcastBoard connection state = do
-  serverMessage <- getBoard state
-  narrowcast connection serverMessage
+narrowcastBoard (playerId /\ connection) state = do
+  board <- getBoard state
+  narrowcast connection $ ServerMessage { board, playerId }
 
 broadcastBoard :: State -> Effect Unit
 broadcastBoard (State state) = do
   log "Broadcasting board"
-  serverMessage <- getBoard (State state)
-  broadcast (State state) serverMessage
+  board <- getBoard (State state)
+  broadcast (State state) board
 
-getBoard :: State -> Effect ServerMessage
+getBoard :: State -> Effect Board
 getBoard (State state) = do
   currentMessages <- Ref.read state.gameState
-  pure
-    $ ServerMessage
-        { board: toBoard currentMessages
-        }
+  pure $ toBoard currentMessages

@@ -24,6 +24,7 @@ to generate this file without the comments in this block.
   , "halogen"
   , "halogen-subscriptions"
   , "halogen-svg-elems"
+  , "integers"
   , "js-date"
   , "lists"
   , "logging"
