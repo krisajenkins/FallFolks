@@ -49,9 +49,15 @@ viewMessages (ServerMessage gameState) =
 viewPlayer :: forall p i. PlayerId -> PlayerState -> HTML p i
 viewPlayer myPlayerId { playerId, playerState: Position { x, y } } =
   div []
-    [ text $ if playerId == myPlayerId then "Me" else show playerId
-    , text ": "
-    , text $ show x
-    , text " "
-    , text $ show y
-    ]
+    [ text summary ]
+  where
+  summary =
+    fold
+      [ show playerId
+      , ": "
+      , show x
+      , " "
+      , show y
+      , " "
+      , if playerId == myPlayerId then "(Me)" else ""
+      ]
