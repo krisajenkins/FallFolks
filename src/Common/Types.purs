@@ -121,7 +121,14 @@ newtype Position
 
 derive instance eqPosition :: Eq Position
 
+derive instance ordPosition :: Ord Position
+
+derive newtype instance semiRingPosition :: Semiring Position
+
+derive newtype instance ringPosition :: Ring Position
+
 derive instance newtypePosition :: Newtype Position _
+
 derive instance genericPosition :: Generic Position _
 
 instance showPosition :: Show Position where
