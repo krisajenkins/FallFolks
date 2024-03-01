@@ -4,7 +4,7 @@ import Common.Types (PlayerId)
 import Data.Map (Map)
 import Effect.Ref (Ref)
 import Server.Game (GameState)
-import Websocket.Server (WebsocketConnection)
+import Server.Webserver (WebsocketConnection)
 
 data State
   = State

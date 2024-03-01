@@ -2,6 +2,8 @@
   "dependencies": {
     "@parcel/transformer-sass": "^2.12.0",
     "bootstrap": "^5.3.3",
+    "express": "^4.18.3",
+    "express-ws": "^5.0.2",
     "node-websocket": "^0.1.6",
     "parcel": "^2.11.0",
     "robust-websocket": "^1.0.0",
@@ -9,7 +11,7 @@
     "ws": "^8.16.0"
   },
   "scripts": {
-    "dev": "parcel entry.js index.html",
+    "dev": "parcel index.html",
     "server": "spago run -m Server",
     "build": "parcel build index.html --detailed-report",
     "format": "find src test -name \\*.purs -exec purty --write {} \\;"

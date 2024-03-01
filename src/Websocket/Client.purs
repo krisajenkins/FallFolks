@@ -40,7 +40,7 @@ makeWebsocketChannels = do
           to <- Subscription.create
           websocketClient <-
             makeWebsocketClient
-              { url: "ws://localhost:8080"
+              { url: "ws://localhost:8080/ws"
               }
           onmessage websocketClient
             $ \msg -> do

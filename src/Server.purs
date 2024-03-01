@@ -1,12 +1,13 @@
 module Server (main) where
 
-import Data.Tuple.Nested (type (/\), (/\))
 import Prelude
+
 import Common.Types (ClientMessage, PlayerId(..), ServerMessage(..), Board)
 import Data.Either (Either(..))
 import Data.Map as Map
 import Data.Newtype (over)
 import Data.TraversableWithIndex (traverseWithIndex)
+import Data.Tuple.Nested (type (/\), (/\))
 import Data.UUID (genUUID)
 import Effect (Effect)
 import Effect.Aff (bracket, launchAff_)
@@ -18,17 +19,23 @@ import Prim.TypeError (class Warn, Text)
 import Server.Game (GameState(..), toBoard)
 import Server.Game as Game
 import Server.Types (State(..))
+import Server.Webserver (Webserver, WebsocketConnection)
+import Server.Webserver as Server.Webserver
 import Simple.JSON (readJSON, writeJSON)
-import Websocket.Server (WebsocketConnection, WebsocketServerConfig, createServer, onConnection, onMessage, send)
+import Websocket.Server (onMessage, send)
 
 main :: Effect Unit
 main = do
   log "START"
   launchAff_
     $ bracket
-        ( do
-            webserver <- liftEffect $ startWebsocketServer { port: 8080 }
-            pure webserver
+        ( 
+            liftEffect
+                $ do
+                    server <- Server.Webserver.createWebserver
+                    installWebsocket server
+                    Server.Webserver.addStatic "dist" server
+                    Server.Webserver.runWebserver { port: 8080 } server
         )
         ( \_webserer -> do
             log "Shutdown Hook"
@@ -39,16 +46,15 @@ main = do
   log "END"
 
 ------------------------------------------------------------
-startWebsocketServer ::
+installWebsocket ::
   Warn (Text "We aren't handling websocket disconnections at all.") =>
-  WebsocketServerConfig -> Effect State
-startWebsocketServer config = do
-  server <- createServer config
+  Webserver -> Effect Unit
+installWebsocket server = do
   connections <- Ref.new Map.empty
   gameState <- Ref.new (GameState Map.empty)
   let
     state = { connections, gameState }
-  onConnection server
+  Server.Webserver.addWebsocket "/ws" server 
     $ \connection -> do
         playerId <- PlayerId <$> genUUID
         Ref.modify_ (Map.insert playerId connection) state.connections
@@ -71,10 +77,6 @@ startWebsocketServer config = do
                   Ref.modify_ (Game.process playerId clientMessage) state.gameState
                   broadcastBoard (State state)
           )
-  pure $ State state
-
-shutdown :: Warn (Text "TODO Handle shutdown") => State -> Effect Unit
-shutdown _state = pure unit
 
 -- | Send the state to everyone.
 narrowcast :: WebsocketConnection -> ServerMessage -> Effect Unit
