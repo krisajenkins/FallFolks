@@ -1,6 +1,8 @@
 module Common.Types where
 
 import Prelude
+
+import Common.Arbitrary (arbitrarySum)
 import Control.Monad.Except (throwError)
 import Control.Monad.Gen (class MonadGen)
 import Control.Monad.Gen as Gen
@@ -9,17 +11,16 @@ import Data.Array.NonEmpty as NonEmptyArray
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep as Generic
 import Data.List.Types (NonEmptyList(..))
-import Data.Maybe (Maybe(..), fromJust)
+import Data.Maybe (Maybe(..))
+import Data.Newtype (class Newtype)
 import Data.NonEmpty (NonEmpty(..))
 import Data.Show.Generic (genericShow)
 import Data.UUID (UUID, parseUUID)
 import Data.UUID as UUID
 import Foreign (ForeignError(..))
-import Partial.Unsafe (unsafePartial)
 import Simple.JSON (class ReadForeign, class WriteForeign, readImpl, writeImpl)
 import Simple.JSON.Generic (readSumRep, writeSumRep)
-import Test.QuickCheck.Arbitrary (class Arbitrary, arbitraryGenericSum, genericArbitrary)
-import Test.QuickCheck.Gen (Gen)
+import Test.QuickCheck.Arbitrary (class Arbitrary, genericArbitrary)
 
 newtype PlayerId
   = PlayerId UUID
@@ -120,6 +121,7 @@ newtype Position
 
 derive instance eqPosition :: Eq Position
 
+derive instance newtypePosition :: Newtype Position _
 derive instance genericPosition :: Generic Position _
 
 instance showPosition :: Show Position where
@@ -146,13 +148,7 @@ instance showDirection :: Show Direction where
   show x = genericShow x
 
 instance arbitraryDirection :: Arbitrary Direction where
-  arbitrary = y
-    where
-    x :: Array (Gen Direction)
-    x = map Generic.to <$> arbitraryGenericSum
-
-    y :: Gen Direction
-    y = Gen.oneOf $ unsafePartial $ fromJust $ NonEmptyArray.fromArray x
+  arbitrary = arbitrarySum
 
 instance writeForeignDirection :: WriteForeign Direction where
   writeImpl x = writeSumRep (Generic.from x)
