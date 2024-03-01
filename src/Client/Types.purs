@@ -1,7 +1,6 @@
 module Client.Types where
 
 import Prelude
-
 import Common.Types (ClientMessage, Direction, ServerMessage)
 import Data.Lens (Lens')
 import Data.Lens.Iso.Newtype (_Newtype)

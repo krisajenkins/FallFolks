@@ -1,7 +1,6 @@
 module Common.Types where
 
 import Prelude
-
 import Common.Arbitrary (arbitrarySum)
 import Control.Monad.Except (throwError)
 import Control.Monad.Gen (class MonadGen)
