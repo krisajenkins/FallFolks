@@ -64,8 +64,8 @@ instance showPlayerId :: Show PlayerId where
   show (PlayerId uuid) = "(PlayerId " <> UUID.toString uuid <> ")"
 
 instance readForeignPlayerId :: ReadForeign PlayerId where
-  readImpl x = do
-    str :: String <- readImpl x
+  readImpl o = do
+    str :: String <- readImpl o
     case parseUUID str of
       Nothing -> throwError $ NonEmptyList $ NonEmpty (TypeMismatch "UUID" str) mempty
       Just v -> pure $ PlayerId v
