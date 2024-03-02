@@ -29,7 +29,7 @@ main = do
   log "START"
   launchAff_
     $ bracket
-        ( 
+        (
             liftEffect
                 $ do
                     server <- Server.Webserver.createWebserver
@@ -54,7 +54,7 @@ installWebsocket server = do
   gameState <- Ref.new (GameState Map.empty)
   let
     state = { connections, gameState }
-  Server.Webserver.addWebsocket "/ws" server 
+  Server.Webserver.addWebsocket "/ws" server
     $ \connection -> do
         playerId <- PlayerId <$> genUUID
         Ref.modify_ (Map.insert playerId connection) state.connections

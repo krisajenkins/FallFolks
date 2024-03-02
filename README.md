@@ -25,7 +25,7 @@ on what you learnt.
 # The Events
 
 ```purescript
-data ClientEvent 
+data ClientEvent
   = Move PlayerId < Up | Down | Left | Right >
   | SetName PlayerId String
 

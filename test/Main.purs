@@ -9,7 +9,7 @@ import Test.Server as Test.Server
 import Test.Server.Game as Test.Server.Game
 import Test.Spec.Reporter (consoleReporter)
 import Test.Spec.Runner (runSpec)
-import Test.Simple.JSON.Generic as Test.Simple.JSON.Generic 
+import Test.Simple.JSON.Generic as Test.Simple.JSON.Generic
 
 main :: Effect Unit
 main =
