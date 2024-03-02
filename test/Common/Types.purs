@@ -1,7 +1,7 @@
 module Test.Common.Types (spec) where
 
 import Prelude
-import Common.Types (ClientMessage(..), Direction(..), ServerMessage)
+import Common.Types (ClientMessage(..), Direction(..), ServerMessage, Timestamp)
 import Data.Either (Either(..))
 import Simple.JSON (readJSON, writeJSON)
 import Test.QuickCheck ((===))
@@ -24,4 +24,9 @@ spec =
       it "ServerMessage roundtrip to/from JSON" do
         quickCheck
           $ \(value :: ServerMessage) ->
+              Right value === readJSON (writeJSON value)
+    describe "Timestamp" do
+      it "Timestamp roundtrip to/from JSON" do
+        quickCheck
+          $ \(value :: Timestamp) ->
               Right value === readJSON (writeJSON value)

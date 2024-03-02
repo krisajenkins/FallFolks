@@ -2,13 +2,19 @@ module Common.Types where
 
 import Prelude
 import Common.Arbitrary (arbitrarySum)
-import Control.Monad.Except (throwError)
+import Control.Monad.Except (except, throwError)
 import Control.Monad.Gen (class MonadGen)
 import Control.Monad.Gen as Gen
 import Data.Array (catMaybes)
 import Data.Array.NonEmpty as NonEmptyArray
+import Data.Bifunctor (lmap)
+import Data.DateTime (DateTime)
+import Data.DateTime.Gen (genDateTime)
+import Data.Either (either)
+import Data.Formatter.DateTime (Formatter, format, parseFormatString, unformatParser)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep as Generic
+import Data.List.NonEmpty as NonEmptyList
 import Data.List.Types (NonEmptyList(..))
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype)
@@ -16,7 +22,10 @@ import Data.NonEmpty (NonEmpty(..))
 import Data.Show.Generic (genericShow)
 import Data.UUID (UUID, parseUUID)
 import Data.UUID as UUID
-import Foreign (ForeignError(..))
+import Foreign (ForeignError(..), F)
+import Parsing (ParserT, parseErrorMessage, runParser)
+import Parsing as P
+import Partial.Unsafe (unsafeCrashWith)
 import Simple.JSON (class ReadForeign, class WriteForeign, readImpl, writeImpl)
 import Simple.JSON.Generic (readSumRep, writeSumRep)
 import Test.QuickCheck.Arbitrary (class Arbitrary, genericArbitrary)
@@ -170,3 +179,38 @@ oppositeDirection South = North
 oppositeDirection West = East
 
 oppositeDirection East = West
+
+------------------------------------------------------------
+newtype Timestamp
+  = Timestamp DateTime
+
+derive newtype instance eqTimestamp :: Eq Timestamp
+
+derive instance genericTimestamp :: Generic Timestamp _
+
+instance showTimestamp :: Show Timestamp where
+  show = genericShow
+
+instance readForeignTimestamp :: ReadForeign Timestamp where
+  readImpl o = do
+    str <- readImpl o
+    Timestamp <$> readDateTime str
+
+instance writeForeignTimestamp :: WriteForeign Timestamp where
+  writeImpl (Timestamp x) = writeImpl $ format extendedDateTimeFormatInUTC x
+
+instance arbitraryTimestamp :: Arbitrary Timestamp where
+  arbitrary = Timestamp <$> genDateTime
+
+parseDateTime :: forall m. Monad m => ParserT String m DateTime
+parseDateTime = unformatParser extendedDateTimeFormatInUTC
+
+extendedDateTimeFormatInUTC :: Formatter
+extendedDateTimeFormatInUTC =
+  parseFormatString "YYYY-MM-DDTHH:mm:ss.SSSZ"
+    # either unsafeCrashWith identity
+
+readDateTime :: String -> F DateTime
+readDateTime str = except $ lmap toForeignError $ runParser str parseDateTime
+  where
+  toForeignError = NonEmptyList.singleton <<< TypeMismatch "DateTime" <<< parseErrorMessage
