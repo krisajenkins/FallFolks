@@ -3,6 +3,7 @@ module Simple.JSON.Generic where
 import Prelude
 import Control.Alternative ((<|>))
 import Control.Monad.Except (throwError)
+import Data.Foldable (fold)
 import Data.Generic.Rep (Argument(..), Constructor(..), NoArguments(..), Sum(..))
 import Foreign (F, Foreign, ForeignError(..))
 import Foreign.Index (readProp)
@@ -57,14 +58,16 @@ instance readForeignSumRepGenericConstructorArgument ::
   readSumRep x = do
     s <- readProp "_tag" x >>= readImpl
     args <- readProp "_args" x >>= readImpl
-    if s == name then
-      pure $ Constructor (Argument args)
-    else
+    if s /= name then
       throwError <<< pure <<< ForeignError
-        $ "Enum string "
-        <> s
-        <> " did not match expected string "
-        <> name
+        $ fold
+            [ "Enum string "
+            , s
+            , " did not match expected string "
+            , name
+            ]
+    else
+      pure $ Constructor (Argument args)
     where
     name = reflectSymbol (Proxy :: Proxy name)
 
@@ -73,13 +76,15 @@ instance readForeignSumRepGenericConstructorNoArgs ::
   ReadForeignSumRep (Constructor name NoArguments) where
   readSumRep x = do
     s <- readImpl x
-    if s == name then
-      pure $ Constructor NoArguments
-    else
+    if s /= name then
       throwError <<< pure <<< ForeignError
-        $ "Enum string "
-        <> s
-        <> " did not match expected string "
-        <> name
+        $ fold
+            [ "Enum string "
+            , s
+            , " did not match expected string "
+            , name
+            ]
+    else
+      pure $ Constructor NoArguments
     where
     name = reflectSymbol (Proxy :: Proxy name)
